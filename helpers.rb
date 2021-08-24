@@ -36,7 +36,7 @@ def int_single(day)
   int_list(day)[0]
 end
 
-# two dimensional coordinate structs
+# two dimensional coordinate class
 class C2
   attr_accessor :x, :y
 
