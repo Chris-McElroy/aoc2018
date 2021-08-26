@@ -7,7 +7,7 @@ modules = int_list(1)
 fuel1 = 0
 fuel2 = 0
 
-modules.each do |m|
+for m in modules
   fuel1 += m / 3 - 2
 
   while m > 5
