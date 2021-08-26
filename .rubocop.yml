@@ -3,3 +3,10 @@ AllCops:
 
 Style/For:
   Enabled: false
+
+Style/NumericLiterals:
+  Enabled: false
+
+Naming/MethodParameterName:
+  Enabled: false
+  

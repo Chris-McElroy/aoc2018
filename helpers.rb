@@ -44,9 +44,9 @@ end
 class C2
   attr_accessor :x, :y
 
-  def initialize(x_in, y_in)
-    @x = x_in
-    @y = y_in
+  def initialize(x, y)
+    @x = x
+    @y = y
   end
 
   def adjacents
@@ -91,6 +91,20 @@ class C2
   end
 end
 
+def dir_from_udlr(letter)
+  c2_directions = {
+    'U' => C2.new(0, 1), 'D' => C2.new(0, -1), 'L' => C2.new(-1, 0), 'R' => C2.new(1, 0)
+  }
+  c2_directions[letter]
+end
+
+def dir_from_nsew(letter)
+  c2_directions = {
+    'N' => C2.new(0, 1), 'S' => C2.new(0, -1), 'E' => C2.new(1, 0), 'W' => C2.new(-1, 0)
+  }
+  c2_directions[letter]
+end
+
 def run_intcode(code)
   line = 0
   while code[line] != 99
@@ -112,4 +126,12 @@ def arithmetic_op(code, line)
   when 2
     param1 * param2
   end
+end
+
+def min(a, b)
+  a < b ? a : b
+end
+
+def max(a, b)
+  a > b ? a : b
 end
