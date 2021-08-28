@@ -91,18 +91,12 @@ class C2
   end
 end
 
-def dir_from_udlr(letter)
-  c2_directions = {
-    'U' => C2.new(0, 1), 'D' => C2.new(0, -1), 'L' => C2.new(-1, 0), 'R' => C2.new(1, 0)
-  }
-  c2_directions[letter]
+def dir_from_udlr_hash
+  { 'U' => C2.new(0, 1), 'D' => C2.new(0, -1), 'L' => C2.new(-1, 0), 'R' => C2.new(1, 0) }
 end
 
-def dir_from_nsew(letter)
-  c2_directions = {
-    'N' => C2.new(0, 1), 'S' => C2.new(0, -1), 'E' => C2.new(1, 0), 'W' => C2.new(-1, 0)
-  }
-  c2_directions[letter]
+def dir_from_nsew_hash
+  { 'N' => C2.new(0, 1), 'S' => C2.new(0, -1), 'E' => C2.new(1, 0), 'W' => C2.new(-1, 0) }
 end
 
 def run_intcode(code)

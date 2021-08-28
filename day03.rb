@@ -3,10 +3,11 @@
 require './helpers'
 
 wires = word_list(3, ',')
+dir_hash = dir_from_udlr_hash
 wire1 = { C2.new(0, 0) => 0 }
 last = C2.new(0, 0)
 for vector in wires[0]
-  dir = dir_from_udlr(vector[0])
+  dir = dir_hash[vector[0]]
   vector[1..-1].to_i.times do
     last += dir
     wire1[last.h] = wire1.size
@@ -18,7 +19,7 @@ wire2_dist = 0
 min1 = 100000000
 min2 = 100000000
 for vector in wires[1]
-  dir = dir_from_udlr(vector[0])
+  dir = dir_hash[vector[0]]
   vector[1..-1].to_i.times do
     last += dir
     wire1_dist = wire1[last.h]
