@@ -12,3 +12,12 @@ Naming/MethodParameterName:
 
 Layout/EmptyLineAfterGuardClause:
   Enabled: false
+
+Metrics/MethodLength:
+  IgnoredMethods: ['run_intcode']
+
+Metrics/AbcSize:
+  IgnoredMethods: ['run_intcode']
+
+Metrics/CyclomaticComplexity:
+  IgnoredMethods: ['run_intcode']
