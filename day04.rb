@@ -2,40 +2,35 @@
 
 require './helpers'
 
-range = int_word_line(4, '-')
-working1 = 0
-working2 = 0
-n = range[0]
+input = word_list(4).sort
+guard = 0
+min = Hash.new
+perMin = Array.new
+for _ in 0..59
+  perMin << Hash.new
 
-def next_increasing(n)
-  n_digits = n.to_s.chars.map(&:to_i)
-  mult = 11111
-  mod = 100000
-  for i in (0..4)
-    return n + (n_digits[i] * mult) - (n % mod) if n_digits[i] > n_digits[i + 1]
-    mod /= 10
-    mult -= mod
+end
+slept = 0
+
+for line in input
+  if line.include? "Guard"
+    guard = line[3].split('#')[1].to_i
+  elsif line.include? "asleep"
+    slept = line[1].split(/:|\]/)[1].to_i
+  elsif line.include? "wakes"
+    min[guard] = (min[guard] || 0) + line[1].split(/:|\]/)[1].to_i - slept
+    for m in slept..(line[1].split(/:|\]/)[1].to_i - 1)
+      perMin[m][guard] = (perMin[m][guard] || 0) + 1
+    end
   end
-  n
 end
 
-def pairs?(n_digits, part1)
-  for (d, i) in n_digits[0..4].each_with_index
-    return true if n_digits[i + 1] == d && (part1 || n_digits[i - 1] != d && n_digits[i + 2] != d)
-  end
-  false
-end
+bestGuard = min.max_by(&:last)[0]
+p bestGuard
 
-loop do
-  n = next_increasing(n)
-  break if n > range[1]
-  n_digits = n.to_s.chars.map(&:to_i)
-  working1 += 1 if pairs?(n_digits, true)
-  working2 += 1 if pairs?(n_digits, false)
-  n += 1
-end
+p perMin.each_with_index.max_by { |hash, _| (hash[bestGuard] || 0) }
 
-p working1, working2
+p perMin.each_with_index.max_by { |hash, _| (hash.max_by(&:last) || [0,0])[1] }
 
-# 2081
-# 1411
+# p min
+# 283 * 460

@@ -21,3 +21,6 @@ Metrics/AbcSize:
 
 Metrics/CyclomaticComplexity:
   IgnoredMethods: ['run_intcode']
+
+Naming/VariableName:
+  Enabled: false

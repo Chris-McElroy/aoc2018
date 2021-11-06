@@ -8,15 +8,15 @@ def string_line(day)
   string_list(day)[0]
 end
 
-def word_list(day, separator = '\n')
+def word_list(day, separator = ' ')
   string_list(day).map { |line| line.split(separator) }
 end
 
-def word_line(day, separator = '\n')
+def word_line(day, separator = ' ')
   word_list(day, separator)[0]
 end
 
-def word_single(day, separator = '\n')
+def word_single(day, separator = ' ')
   word_line(day, separator)[0]
 end
 
@@ -24,11 +24,11 @@ def int_list(day)
   string_list(day).map(&:to_i)
 end
 
-def int_word_list(day, separator = '\n')
+def int_word_list(day, separator = ' ')
   word_list(day, separator).map { |line| line.map(&:to_i) }
 end
 
-def int_word_line(day, separator = '\n')
+def int_word_line(day, separator = ' ')
   word_line(day, separator).map(&:to_i)
 end
 
