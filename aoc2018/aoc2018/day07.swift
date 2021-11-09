@@ -7,13 +7,14 @@
 
 import Foundation
 
-func day7() {
+func d7() {
 	let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	let total = Int(wordLines.map { $0[7].first!.asciiValue! - 65 }.max()!) + 1
+	let steps = inputWords()
+	let total = Int(steps.map { $0[7].first!.asciiValue! - 65 }.max()!) + 1
 	var reqs: [[Int]] = Array(repeating: [], count: total)
 	var order: [Int] = []
 	
-	for line in wordLines {
+	for line in steps {
 		let req = Int(line[1].first!.asciiValue! - 65)
 		let step = Int(line[7].first!.asciiValue! - 65)
 		reqs[step].append(req)
@@ -65,5 +66,5 @@ func day7() {
 	print(order.map({ String(alphabet[$0]) }).joined())
 	print(time)
 }
-//CFGHAEMNBPRDISVWQUZJYTKLOX
-//828
+// CFGHAEMNBPRDISVWQUZJYTKLOX
+// 828

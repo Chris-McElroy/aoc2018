@@ -11,27 +11,61 @@ import CryptoKit
 
 // input functions //
 
-public func inputLines(_ num: Int) -> [String] {
+public func inputStrings(_ separator: String = "\n") -> [String] {
 	do {
 		let home = FileManager.default.homeDirectoryForCurrentUser
-		let name = "input" + (num < 10 ? "0" : "") + "\(num)"
+		let name = "input" + (day < 10 ? "0" : "") + "\(day)"
 		let filePath = projectFolder + "/aoc2018/" + name
 		let file = URL(fileURLWithPath: filePath, relativeTo: home)
-		return try String(contentsOf: file).fullSplit(separator: "\n")
+		let list = try String(contentsOf: file).dropLast().components(separatedBy: separator)
+		return list
 	} catch {
 		print("Error: bad file name")
 		return []
 	}
 }
 
-public func inputInts(_ num: Int) -> [Int] {
-	let input = inputLines(num)
-	return input.map { Int($0) ?? 0 }
+public func inputInts(_ separator: String = "\n") -> [Int] {
+	let input = inputStrings(separator)
+	return input.compactMap { Int($0) ?? nil }
 }
 
-public func inputWords(_ num: Int) -> [[String]] {
-	let input = inputLines(num)
-	return input.map { $0.fullSplit(separator: " ") }
+public func inputWords(_ wordSeparators: [String] = [" "], _ lineSeparator: String = "\n") -> [[String]] {
+	var words = inputStrings(lineSeparator).map { [$0] }
+	for wordSeparator in wordSeparators {
+		words = words.map { line in line.flatMap { $0.components(separatedBy: wordSeparator) } }
+	}
+	words = words.map { line in line.filter { $0 != "" } }
+	return words
+}
+
+public func inputSomeInts(words: [Int], _ wordSeparators: [String] = [" "], _ lineSeparator: String = "\n") -> [[Int]] {
+	let input = inputWords(wordSeparators, lineSeparator)
+	return words.map { word in input.map { line in Int(line[word])! } }
+}
+
+//public func inputAllInts() -> [[Int]] {
+//	let input = inputStrings()
+//	var output: [[Int]] = []
+//	var currentInt: String = ""
+//	for line in input {
+//		var lineInts: [Int] = []
+//		for c in line {
+//			if c.isNumber || (c == "-" && currentInt == "") {
+//				currentInt.append(c)
+//			} else if currentInt != "" {
+//				lineInts.append(Int(currentInt)!)
+//				currentInt = ""
+//			}
+//		}
+//		output.append(lineInts)
+//	}
+//	return output
+//}
+
+public func inputOneInt(word: Int, _ wordSeparators: [String] = [" "], _ lineSeparator: String = "\n") -> [Int] {
+	let input = inputWords(wordSeparators, lineSeparator)
+	return input.map { line in Int(line[word])! }
 }
 
 // shortcuts //
@@ -66,6 +100,27 @@ public extension Collection where Indices.Iterator.Element == Index {
 			i += k
 		}
 		return array
+	}
+	
+	// from https://stackoverflow.com/a/54350570
+	func toTuple() -> (Element) {
+		return (self[0 as! Self.Index])
+	}
+	
+	func toTuple() -> (Element, Element) {
+		return (self[0 as! Self.Index], self[1 as! Self.Index])
+	}
+	
+	func toTuple() -> (Element, Element, Element) {
+		return (self[0 as! Self.Index], self[1 as! Self.Index], self[2 as! Self.Index])
+	}
+	
+	func toTuple() -> (Element, Element, Element, Element) {
+		return (self[0 as! Self.Index], self[1 as! Self.Index], self[2 as! Self.Index], self[3 as! Self.Index])
+	}
+	
+	func toTuple() -> (Element, Element, Element, Element, Element) {
+		return (self[0 as! Self.Index], self[1 as! Self.Index], self[2 as! Self.Index], self[3 as! Self.Index], self[4 as! Self.Index])
 	}
 }
 
@@ -162,14 +217,14 @@ public extension Array where Element: Equatable {
 }
 
 public extension String {
-	func fullSplit(separator: Character) -> [String] {
-		let s = self.split(separator: separator, maxSplits: .max, omittingEmptySubsequences: false).map { String($0) }
-		if s.last == "" {
-			return s.dropLast(1)
-		} else {
-			return s
-		}
-	}
+//	func fullSplit(separator: Character) -> [String] {
+//		let s = self.split(separator: separator, maxSplits: .max, omittingEmptySubsequences: false).map { String($0) }
+//		if s.last == "" {
+//			return s.dropLast(1)
+//		} else {
+//			return s
+//		}
+//	}
 	
 	func occurs(min: Int) -> String {
 		var counts: Dictionary<Character, Int> = [:]
@@ -639,7 +694,7 @@ func intOrReg(val: String, reg: [String: Int]) -> Int {
 	return reg[val] ?? 0
 }
 
-func compute(with language: [String: Operation], program: [[String]] = wordLines, reg: inout [String: Int], line i: inout Int) {
+func compute(with language: [String: Operation], program: [[String]] = inputWords(), reg: inout [String: Int], line i: inout Int) {
 	
 	let line = program[i]
 	let v1 = intOrReg(val: line[1], reg: reg)

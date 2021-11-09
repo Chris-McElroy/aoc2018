@@ -7,7 +7,7 @@
 
 import Foundation
 
-func day8() {
+func d8() {
 	struct Node {
 		let children: Int
 		var foundChildren: Int = 0
@@ -19,7 +19,7 @@ func day8() {
 		var finishedChildren: Bool { children == foundChildren }
 	}
 	
-	let input = wordLines[0].map { Int($0)! }
+	let input = inputInts(" ")
 	var currentNodes: [Node] = [Node(children: input[0], metadata: input[1])]
 	var sum = 0
 	var i = 2
@@ -46,3 +46,5 @@ func day8() {
 	
 	print(sum, currentNodes[0].value)
 }
+
+// 41454 25752

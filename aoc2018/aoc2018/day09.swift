@@ -7,9 +7,9 @@
 
 import Foundation
 
-func day9() {
-	let players = 410
-	let lastMarble = 7205900
+func d9() {
+	let players = inputOneInt(word: 0)[0]
+	let lastMarble = inputOneInt(word: 6)[0] // * 100
 	
 	let marbles: LinkedCycle<Int> = LinkedCycle<Int>()
 	var scores: [Int: Int] = [:]

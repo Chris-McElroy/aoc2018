@@ -7,8 +7,8 @@
 
 import Foundation
 
-func day6() {
-	let coords: [C2] = wordLines.map { C2(Int($0[0].dropLast())!, Int($0[1])!) }
+func d6() {
+	let coords: [C2] = inputSomeInts(words: [0, 1],  [", "]).map { C2($0[0], $0[1]) }
 	var numClosest = Array(repeating: 0, count: coords.count)
 	var inRegion = 0
 	let xBounds = (coords.min(by: { $0.x < $1.x })!.x)...(coords.max(by: { $0.x < $1.x })!.x)
@@ -38,3 +38,6 @@ func day6() {
 	print(numClosest.max()!)
 	print(inRegion)
 }
+
+// 4143
+// 35039
