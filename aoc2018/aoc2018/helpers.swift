@@ -70,6 +70,10 @@ public func inputOneInt(word: Int, _ wordSeparators: [String] = [" "], _ lineSep
 
 // shortcuts //
 
+func make2DArray<Element>(repeating repeatedValue: Element, count1: Int, count2: Int) -> [[Element]] {
+	(0..<count1).map { _ in Array(repeating: repeatedValue, count: count2) }
+}
+
 public extension Collection where Indices.Iterator.Element == Index {
 	subscript(w i: Int?) -> Iterator.Element? {
 		guard let j = i else { return nil }
