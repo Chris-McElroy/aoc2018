@@ -75,12 +75,7 @@ func make2DArray<Element>(repeating repeatedValue: Element, count1: Int, count2:
 }
 
 public extension Collection where Indices.Iterator.Element == Index {
-	subscript(w i: Int?) -> Iterator.Element? {
-		guard let j = i else { return nil }
-		return self[index(startIndex, offsetBy: j % count)]
-	}
-	
-	func first(_ k: Int) -> Self.SubSequence {
+	func first(_ k: Int) -> SubSequence {
 		return self.dropLast(count-k)
 	}
 	
@@ -88,19 +83,23 @@ public extension Collection where Indices.Iterator.Element == Index {
 		return self.dropFirst(count-k)
 	}
 	
-	func slice(start: Int, len: Int) -> SubSequence {
-		return self.first(start+len).dropFirst(start)
+	subscript(r: Range<Int>) -> SubSequence {
+		get {
+			self.first(r.upperBound).dropFirst(r.lowerBound)
+		}
 	}
 	
-	subscript(_ s: Int, _ e: Int) -> SubSequence {
-		return self.first(e).dropFirst(s)
+	subscript(r: ClosedRange<Int>) -> SubSequence {
+		get {
+			self[r.lowerBound..<(r.upperBound + 1)]
+		}
 	}
 	
 	func each(_ k: Int) -> Array<SubSequence> {
 		var array: Array<SubSequence> = []
 		var i = 0
 		while i < count {
-			array.append(slice(start: i, len: Swift.min(k, count-i)))
+			array.append(self[i..<(Swift.min(i + k, count))])
 			i += k
 		}
 		return array
@@ -188,21 +187,47 @@ public extension Array {
 		return self.dropFirst(count-k)
 	}
 	
-	func slice(from start: Int, to end: Int, by k: Int) -> Self {
-		let newSlice = slice(from: start, to: end)
-		return newSlice.enumerated().compactMap { i,e in i.isMultiple(of: k) ? e : nil }
+	subscript(r: Range<Int>) -> Self.SubSequence {
+		get {
+			self.first(r.upperBound).dropFirst(r.lowerBound)
+		}
+		set {
+			let start = index(startIndex, offsetBy: r.lowerBound)
+			let end = index(startIndex, offsetBy: r.upperBound)
+			replaceSubrange(start..<end, with: newValue)
+		}
 	}
 	
-	func slice(from start: Int, to end: Int) -> Self.SubSequence {
-		return self.first(end).dropFirst(start)
+	subscript(r: ClosedRange<Int>) -> Self.SubSequence {
+		get {
+			self[r.lowerBound..<(r.upperBound + 1)]
+		}
+		set {
+			self[r.lowerBound..<(r.upperBound + 1)] = newValue
+		}
 	}
 	
-	func slice(from start: Int, through end: Int, by k: Int) -> Self {
-		return slice(from: start, to: end+1, by: k)
+	subscript(r: Range<Int>, by k: Int) -> Self {
+		get {
+			self[r].enumerated().compactMap { i,e in i.isMultiple(of: k) ? e : nil }
+		}
+		set {
+			var i = r.lowerBound
+			for element in newValue {
+				if i >= r.upperBound { break }
+				self[i] = element
+				i += k
+			}
+		}
 	}
 	
-	func slice(from start: Int, through end: Int) -> Self.SubSequence {
-		return self.slice(from: start, to: end+1)
+	subscript(r: ClosedRange<Int>, by k: Int) -> Self {
+		get {
+			self[r.lowerBound..<(r.upperBound + 1), by: k]
+		}
+		set {
+			self[r.lowerBound..<(r.upperBound + 1), by: k] = newValue
+		}
 	}
 	
 	subscript(_ s: Int, _ e: Int) -> Self.SubSequence {
@@ -217,6 +242,22 @@ public extension Array {
 public extension Array where Element: Equatable {
 	func fullSplit(separator: Element) -> Array<Self> {
 		return self.split(whereSeparator: { $0 == separator}).map { Self($0) }
+	}
+}
+
+public extension Dictionary {
+	init<Element>(from array: [[Element]], key: Int, value: Int) where Element: Hashable {
+		self.init()
+		for part in array {
+			self[part[key] as! Key] = part[value] as? Value
+		}
+	}
+	
+	init<Element>(from array: [[Element]], key: Int) where Value == [Element], Element: Hashable {
+		self.init()
+		for part in array {
+			self[part[key] as! Key] = part
+		}
 	}
 }
 
@@ -236,6 +277,16 @@ public extension String {
 		return String(counts.filter { $0.value >= min }.keys)
 	}
 	
+	subscript(i: Int) -> Character {
+		get {
+			self[index(startIndex, offsetBy: i)]
+		}
+		set {
+			let index = index(startIndex, offsetBy: i)
+			replaceSubrange(index...index, with: String(newValue))
+		}
+	}
+	
 	subscript(w i: Int) -> Character? {
 		return self[index(startIndex, offsetBy: i % count)]
 	}
@@ -245,17 +296,55 @@ public extension String {
 		return self[i]
 	}
 	
-	func slice(from start: Int, to end: Int, by k: Int) -> Self {
-		let newSlice = slice(from: start, to: end)
-		return String(newSlice.enumerated().compactMap { i,e in i.isMultiple(of: k) ? e : nil })
+	subscript(r: Range<Int>) -> String {
+		get {
+			String(self.first(r.upperBound).dropFirst(r.lowerBound))
+		}
+		set {
+			let start = index(startIndex, offsetBy: r.lowerBound)
+			let end = index(startIndex, offsetBy: r.upperBound)
+			replaceSubrange(start..<end, with: newValue)
+		}
 	}
 	
-	func slice(from start: Int, through end: Int, by k: Int) -> Self {
-		return slice(from: start, to: end+1, by: k)
+	subscript(r: ClosedRange<Int>) -> String {
+		get {
+			self[r.lowerBound..<(r.upperBound + 1)]
+		}
+		set {
+			self[r.lowerBound..<(r.upperBound + 1)] = newValue
+		}
+	}
+	
+	subscript(r: Range<Int>, by k: Int) -> String {
+		get {
+			return String(self[r].enumerated().compactMap { i,e in i.isMultiple(of: k) ? e : nil })
+		}
+		set {
+			var i = r.lowerBound
+			for element in newValue {
+				if i >= r.upperBound { break }
+				self[i] = element
+				i += k
+			}
+		}
+	}
+	
+	subscript(r: ClosedRange<Int>, by k: Int) -> String {
+		get {
+			self[r.lowerBound..<(r.upperBound + 1), by: k]
+		}
+		set {
+			self[r.lowerBound..<(r.upperBound + 1), by: k] = newValue
+		}
 	}
 	
 	func firstIndex(of element: Character) -> Int? {
 		firstIndex(of: element)?.utf16Offset(in: self)
+	}
+	
+	func lastIndex(of element: Character) -> Int? {
+		lastIndex(of: element)?.utf16Offset(in: self)
 	}
 }
 
@@ -276,12 +365,28 @@ public extension StringProtocol {
 		return self.dropFirst(count-k)
 	}
 	
-	func slice(from start: Int, through end: Int) -> Self.SubSequence {
-		return self.slice(from: start, to: end+1)
+	subscript(r: Range<Int>) -> String {
+		get {
+			String(self.first(r.lowerBound).dropFirst(r.upperBound))
+		}
 	}
 	
-	func slice(from start: Int, to end: Int) -> Self.SubSequence {
-		return self.first(start+end).dropFirst(start)
+	subscript(r: ClosedRange<Int>) -> String {
+		get {
+			self[r.lowerBound..<(r.upperBound + 1)]
+		}
+	}
+	
+	subscript(r: Range<Int>, by k: Int) -> String {
+		get {
+			return String(self[r].enumerated().compactMap { i,e in i.isMultiple(of: k) ? e : nil })
+		}
+	}
+	
+	subscript(r: ClosedRange<Int>, by k: Int) -> String {
+		get {
+			self[r.lowerBound..<(r.upperBound + 1), by: k]
+		}
 	}
 	
 	func isin(_ string: Self?) -> Bool {
